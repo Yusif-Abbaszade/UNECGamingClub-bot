@@ -1,0 +1,14 @@
+{
+  "name": "unec-gaming-club-bot",
+  "version": "1.0.0",
+  "description": "UNEC Gaming Club rəsmi Discord botu — moderasiya və səs logları",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@discordjs/voice": "^0.19.2",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.5"
+  }
+}
