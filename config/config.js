@@ -15,6 +15,9 @@ module.exports = {
   // Bot hazır olduqda avtomatik qoşulacağı səs kanalının ID-si
   AUTO_VOICE_CHANNEL_ID: '1547924314316083281',
 
+  // Universitet rollarının veriləcəyi kanalın ID-si
+  ROLE_CHANNEL_ID: '1548827326505156718',
+
   // Log kanalları
   LOG_CHANNELS: {
     VOICE: '1547750106399383673',      // #ses-log — səs kanalı giriş/çıxış logları

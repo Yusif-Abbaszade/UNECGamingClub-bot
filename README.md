@@ -50,13 +50,19 @@ DISCORD_TOKEN=sənin_yeni_tokenin
 Discord-da Developer Mode aç (Settings → Advanced → Developer Mode), sonra:
 - `#ses-log` kanalına sağ klik → **Copy Channel ID** → `config.js`-də `LOG_CHANNELS.VOICE`-ə yapışdır
 - `#komanda-log` kanalına sağ klik → **Copy Channel ID** → `config.js`-də `LOG_CHANNELS.COMMAND`-a yapışdır
+- Universitet rollarının veriləcəyi `#rol-al` kanalına sağ klik → **Copy Channel ID** → `config.js`-də `ROLE_CHANNEL_ID`-yə yapışdır
 
 ```javascript
 LOG_CHANNELS: {
   VOICE: '1234567890123456789',
   COMMAND: '9876543210987654321',
 },
+ROLE_CHANNEL_ID: '1234567890123456789',
 ```
+
+`ROLE_CHANNEL_ID` doldurulduqdan sonra bot yenidən başladıqda menyu mesajını yaradacaq və
+universitet rolları yoxdursa özü yaradacaq. Botda **Manage Roles** icazəsi olmalı və bot rolu
+yaradılan universitet rollarından yuxarıda yerləşməlidir.
 
 ### 4. Botu işə sal
 ```bash
