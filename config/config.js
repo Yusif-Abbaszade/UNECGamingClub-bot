@@ -21,6 +21,15 @@ module.exports = {
   // Tweet-lərin paylaşılacağı kanalın ID-si
   TWEET_CHANNEL_ID: '1549415625107963957',
 
+  // Aktivlik statistikalarının toplanacağı ümumi söhbət kanalı
+  GENERAL_CHAT_CHANNEL_ID: process.env.GENERAL_CHAT_CHANNEL_ID || '',
+  GENERAL_CHAT_CHANNEL_NAME: 'umumi-sohbet',
+
+  // Bir istifadəçinin bu müddət ərzində göndərdiyi mesajlar spam sayılır
+  SPAM_WINDOW_MS: 5000,
+  SPAM_MESSAGE_LIMIT: 4,
+  SPAM_TIMEOUT_MS: 30 * 1000,
+
   // Log kanalları
   LOG_CHANNELS: {
     VOICE: '1547750106399383673',      // #ses-log — səs kanalı giriş/çıxış logları

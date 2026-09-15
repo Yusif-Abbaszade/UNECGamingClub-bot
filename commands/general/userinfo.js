@@ -14,22 +14,22 @@ function formatDate(timestamp) {
   return timestamp ? new Date(timestamp).toLocaleDateString('az-AZ') : 'Məlum deyil';
 }
 
-function wrapRoleNames(roleNames, maxCharacters = 42) {
-  const lines = [];
-  let line = '';
+function buildRoleRows(roleNames) {
+  const rows = [[]];
 
-  for (const roleName of roleNames) {
-    const role = `@${roleName}`;
-    if ((line + (line ? ', ' : '') + role).length > maxCharacters && line) {
-      lines.push(line);
-      line = role;
-    } else {
-      line += `${line ? ', ' : ''}${role}`;
+  for (const roleName of roleNames.length ? roleNames : ['Yoxdur']) {
+    const label = `@${roleName}`;
+    const width = Math.min(244, Math.max(112, (label.length * 9) + 34));
+    const currentRow = rows[rows.length - 1];
+    const currentWidth = currentRow.reduce((sum, role) => sum + role.width + 10, 0);
+
+    if (currentRow.length && currentWidth + width > 756) {
+      rows.push([]);
     }
+    rows[rows.length - 1].push({ label, width });
   }
 
-  if (line) lines.push(line);
-  return lines.length ? lines : ['Yoxdur'];
+  return rows;
 }
 
 async function getAvatarDataUri(target) {
@@ -49,19 +49,26 @@ async function buildUserImage(target) {
     .filter((role) => role.id !== target.guild.id)
     .sort((first, second) => second.position - first.position)
     .map((role) => role.name);
-  const roleLines = wrapRoleNames(roleNames);
+  const roleRows = buildRoleRows(roleNames);
   const displayName = escapeXml(target.user.globalName || target.user.username);
   const nickname = escapeXml(target.displayName || target.user.username);
   const username = escapeXml(`@${target.user.username}`);
   const avatarDataUri = await getAvatarDataUri(target);
-  const rolesHeight = 78 + (roleLines.length * 32);
-  const height = 595 + rolesHeight;
+  const rolesHeight = 88 + (roleRows.length * 52);
+  const height = 435 + rolesHeight + 70;
   const avatarSvg = avatarDataUri
     ? `<image href="${avatarDataUri}" x="52" y="46" width="112" height="112" clip-path="url(#avatar)" preserveAspectRatio="xMidYMid slice"/>`
     : '<circle cx="108" cy="102" r="56" fill="#5865f2"/><text x="108" y="114" text-anchor="middle" class="fallbackIcon">UGC</text>';
-  const roleSvg = roleLines.map((line, index) => (
-    `<text x="76" y="${615 + (index * 32)}" class="roleValue">${escapeXml(line)}</text>`
-  )).join('');
+  const roleSvg = roleRows.map((row, rowIndex) => {
+    let x = 76;
+    const y = 520 + (rowIndex * 52);
+    return row.map((role) => {
+      const chip = `<rect x="${x}" y="${y - 28}" width="${role.width}" height="38" rx="12" fill="#39465f"/>
+        <text x="${x + 14}" y="${y - 3}" class="roleValue">${escapeXml(role.label)}</text>`;
+      x += role.width + 10;
+      return chip;
+    }).join('');
+  }).join('');
   const stats = [
     ['İstifadəçi ID', target.id],
     ['Ləqəb (Nickname)', nickname],
@@ -70,11 +77,15 @@ async function buildUserImage(target) {
     ['Serverə qoşulub', formatDate(target.joinedTimestamp)],
   ];
   const statSvg = stats.map(([label, value], index) => {
-    const column = index % 3;
-    const row = Math.floor(index / 3);
-    const x = 52 + (column * 280);
-    const y = 205 + (row * 112);
-    return `<rect x="${x}" y="${y}" width="250" height="84" rx="14" fill="#293039"/>
+    const layouts = [
+      { x: 52, y: 205, width: 530 },
+      { x: 602, y: 205, width: 246 },
+      { x: 52, y: 317, width: 250 },
+      { x: 322, y: 317, width: 250 },
+      { x: 592, y: 317, width: 256 },
+    ];
+    const { x, y, width } = layouts[index];
+    return `<rect x="${x}" y="${y}" width="${width}" height="84" rx="14" fill="#293039"/>
       <text x="${x + 18}" y="${y + 30}" class="label">${escapeXml(label)}</text>
       <text x="${x + 18}" y="${y + 63}" class="value">${escapeXml(value)}</text>`;
   }).join('');
@@ -93,17 +104,18 @@ async function buildUserImage(target) {
     <text x="198" y="82" class="title">${displayName}</text>
     <text x="198" y="120" class="subtitle">${username}</text>
     ${statSvg}
-    <rect x="52" y="540" width="796" height="${rolesHeight}" rx="16" fill="#293039"/>
-    <text x="76" y="580" class="roleTitle">Rollar (${roleNames.length})</text>
+    <rect x="52" y="435" width="796" height="${rolesHeight}" rx="16" fill="#293039"/>
+    <text x="76" y="475" class="roleTitle">Rollar (${roleNames.length})</text>
     ${roleSvg}
-    <text x="52" y="${height - 28}" class="footer">Created by Zarzigle  •  User Info</text>
+    <text x="52" y="${height - 28}" class="footer">UNEC Gaming Club</text>
+    <text x="848" y="${height - 28}" text-anchor="end" class="footer">Created by Zarzigle</text>
     <style>
       .title { font: 700 36px Arial, sans-serif; fill: #ffffff; }
       .subtitle { font: 22px Arial, sans-serif; fill: #aeb7c2; }
       .label { font: 19px Arial, sans-serif; fill: #aeb7c2; }
       .value { font: 700 22px Arial, sans-serif; fill: #ffffff; }
       .roleTitle { font: 700 22px Arial, sans-serif; fill: #ffffff; }
-      .roleValue { font: 18px Arial, sans-serif; fill: #c8d4ff; }
+      .roleValue { font: 16px Arial, sans-serif; fill: #d6e0ff; }
       .footer { font: 18px Arial, sans-serif; fill: #87919d; }
       .fallbackIcon { font: 700 22px Arial, sans-serif; fill: #ffffff; }
     </style>

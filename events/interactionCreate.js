@@ -1,5 +1,6 @@
 const {
   ActionRowBuilder,
+  PermissionsBitField,
   TextInputBuilder,
   TextInputStyle,
 } = require('discord.js');
@@ -15,6 +16,11 @@ const {
   SERVERINFO_REFRESH_BUTTON_ID,
   buildServerImage,
 } = require('../commands/general/serverinfo');
+const {
+  MESSAGE_TOP_REFRESH_BUTTON_ID,
+  VOICE_TOP_REFRESH_BUTTON_ID,
+  buildLeaderboardImage,
+} = require('../utils/activityLeaderboard');
 const {
   ROLE_MENU_PREFIX,
   GENDER_MENU_PREFIX,
@@ -32,6 +38,11 @@ module.exports = {
   async execute(interaction, client) {
     if (interaction.isButton() && interaction.customId === SERVERINFO_REFRESH_BUTTON_ID) {
       await handleServerInfoRefresh(interaction);
+      return;
+    }
+
+    if (interaction.isButton() && [MESSAGE_TOP_REFRESH_BUTTON_ID, VOICE_TOP_REFRESH_BUTTON_ID].includes(interaction.customId)) {
+      await handleLeaderboardRefresh(interaction);
       return;
     }
 
@@ -97,6 +108,25 @@ async function handleServerInfoRefresh(interaction) {
     console.error('[Serverinfo yenilənmə xətası]', err);
     if (interaction.deferred) {
       await interaction.followUp({ content: '❌ Server məlumatlarını yeniləmək mümkün olmadı.', ephemeral: true }).catch(() => null);
+    }
+  }
+}
+
+async function handleLeaderboardRefresh(interaction) {
+  if (!interaction.guild) return;
+  if (!interaction.memberPermissions?.has(PermissionsBitField.Flags.Administrator)) {
+    await interaction.reply({ content: '❌ Bu sıralamanı yalnız administratorlar yeniləyə bilər.', ephemeral: true });
+    return;
+  }
+
+  try {
+    await interaction.deferUpdate();
+    const type = interaction.customId === VOICE_TOP_REFRESH_BUTTON_ID ? 'voice' : 'message';
+    await interaction.message.edit(await buildLeaderboardImage(interaction.guild, type));
+  } catch (err) {
+    console.error('[Top sıralama yenilənmə xətası]', err);
+    if (interaction.deferred) {
+      await interaction.followUp({ content: '❌ Sıralamanı yeniləmək mümkün olmadı.', ephemeral: true }).catch(() => null);
     }
   }
 }

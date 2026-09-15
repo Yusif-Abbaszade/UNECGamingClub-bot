@@ -88,7 +88,8 @@ async function buildServerImage(guild) {
     <text x="205" y="90" class="title">${serverName}</text>
     <text x="205" y="130" class="subtitle">Server məlumatları</text>
     ${statSvg}
-    <text x="60" y="605" class="footer">UNEC Gaming Club  •  Server Info</text>
+    <text x="60" y="605" class="footer">UNEC Gaming Club</text>
+    <text x="840" y="605" text-anchor="end" class="footer">Created by Zarzigle</text>
     <style>
       .title { font: 700 36px Arial, sans-serif; fill: #ffffff; }
       .subtitle { font: 22px Arial, sans-serif; fill: #aeb7c2; }

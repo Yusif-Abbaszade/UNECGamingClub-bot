@@ -1,5 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const config = require('../config/config');
+const { addVoiceTime } = require('../utils/activityStats');
+const { startVoiceSession, endVoiceSession } = require('../utils/voiceSessions');
 
 function buildVoiceEmbed({ title, color, member, channel }) {
   return new EmbedBuilder()
@@ -27,6 +29,7 @@ module.exports = {
 
     // Kanala daxil olma (heç bir kanalda deyildi → kanala girdi)
     if (!oldState.channel && newState.channel) {
+      startVoiceSession(newState.guild.id, member.id);
       const embed = buildVoiceEmbed({
         title: '➡️ SƏS KANALINA GİRİŞ EDİLDİ',
         color: 'JOIN',
@@ -38,6 +41,7 @@ module.exports = {
 
     // Kanaldan çıxma (kanalda idi → heç bir kanalda deyil)
     if (oldState.channel && !newState.channel) {
+      addVoiceTime(newState.guild.id, member.id, endVoiceSession(newState.guild.id, member.id));
       const embed = buildVoiceEmbed({
         title: '⬅️ SƏS KANALINDAN ÇIXIŞ EDİLDİ',
         color: 'LEAVE',
