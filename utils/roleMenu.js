@@ -27,6 +27,11 @@ const universities = [
 ];
 
 const ROLE_MENU_PREFIX = 'university_role_';
+const GENDER_MENU_PREFIX = 'gender_role_';
+const genders = [
+  { key: 'girl', label: 'Qız', emoji: '♀️' },
+  { key: 'boy', label: 'Oğlan', emoji: '♂️' },
+];
 
 function getUniversity(key) {
   return universities.find((university) => university.key === key);
@@ -37,19 +42,39 @@ function getRoleName(university) {
   return `🎓${code}`;
 }
 
+function getGender(key) {
+  return genders.find((gender) => gender.key === key);
+}
+
+function getGenderRoleName(gender) {
+  return `${gender.emoji}${gender.label}`;
+}
+
 function getRoleMenuPayload() {
   return {
     embeds: [new EmbedBuilder()
       .setColor(config.COLORS.INFO)
       .setTitle('Universitet rolunu seç')
-      .setDescription('Aşağıdakı menyulardan oxuduğun universiteti seç. Yalnız bir universitet rolu saxlaya bilərsən.')
+      .setDescription('Aşağıdakı menyulardan universitetini və cinsiyyətini seç. Hər kateqoriyadan yalnız bir rol saxlaya bilərsən.')
       .setFooter({ text: config.FOOTER_TEXT })],
-    components: [new ActionRowBuilder().addComponents(
-      new StringSelectMenuBuilder()
-        .setCustomId(`${ROLE_MENU_PREFIX}0`)
-        .setPlaceholder('Universitetini seç')
-        .addOptions(universities.map((university) => ({ label: university.label, value: university.key }))),
-    )],
+    components: [
+      new ActionRowBuilder().addComponents(
+        new StringSelectMenuBuilder()
+          .setCustomId(`${ROLE_MENU_PREFIX}0`)
+          .setPlaceholder('Universitetini seç')
+          .addOptions(universities.map((university) => ({ label: university.label, value: university.key }))),
+      ),
+      new ActionRowBuilder().addComponents(
+        new StringSelectMenuBuilder()
+          .setCustomId(`${GENDER_MENU_PREFIX}0`)
+          .setPlaceholder('Cinsiyyətini seç')
+          .addOptions(genders.map((gender) => ({
+            label: gender.label,
+            value: gender.key,
+            emoji: gender.emoji,
+          }))),
+      ),
+    ],
   };
 }
 
@@ -65,6 +90,12 @@ async function ensureRoleMenuMessage(client) {
     const role = channel.guild.roles.cache.find((item) => item.name === getRoleName(university));
     if (!role) {
       await channel.guild.roles.create({ name: getRoleName(university), reason: 'Universitet rol menyusu üçün yaradıldı' });
+    }
+  }
+  for (const gender of genders) {
+    const role = channel.guild.roles.cache.find((item) => item.name === getGenderRoleName(gender));
+    if (!role) {
+      await channel.guild.roles.create({ name: getGenderRoleName(gender), reason: 'Cinsiyyət rol menyusu üçün yaradıldı' });
     }
   }
 
@@ -84,9 +115,13 @@ async function ensureRoleMenuMessage(client) {
 
 module.exports = {
   ROLE_MENU_PREFIX,
+  GENDER_MENU_PREFIX,
   getUniversity,
   getRoleName,
+  getGender,
+  getGenderRoleName,
   getRoleMenuPayload,
   ensureRoleMenuMessage,
   universities,
+  genders,
 };
