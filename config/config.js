@@ -18,6 +18,9 @@ module.exports = {
   // Universitet rollarının veriləcəyi kanalın ID-si
   ROLE_CHANNEL_ID: '1548827326505156718',
 
+  // Tweet-lərin paylaşılacağı kanalın ID-si
+  TWEET_CHANNEL_ID: '1549415625107963957',
+
   // Log kanalları
   LOG_CHANNELS: {
     VOICE: '1547750106399383673',      // #ses-log — səs kanalı giriş/çıxış logları

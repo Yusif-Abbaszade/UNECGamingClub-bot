@@ -2,6 +2,7 @@ const { ActivityType } = require('discord.js');
 const { joinVoiceChannel } = require('@discordjs/voice');
 const config = require('../config/config');
 const { ensureRoleMenuMessage } = require('../utils/roleMenu');
+const { ensureTweetPanelMessage } = require('../utils/tweetBot');
 
 async function joinAutoVoiceChannel(client) {
   try {
@@ -46,6 +47,14 @@ module.exports = {
         await ensureRoleMenuMessage(client);
       } catch (err) {
         console.error('❌ Rol-al menyusunu hazırlamaq mümkün olmadı:', err.message);
+      }
+    }
+
+    if (config.TWEET_CHANNEL_ID) {
+      try {
+        await ensureTweetPanelMessage(client);
+      } catch (err) {
+        console.error('❌ Tweet panelını hazırlamaq mümkün olmadı:', err.message);
       }
     }
   },

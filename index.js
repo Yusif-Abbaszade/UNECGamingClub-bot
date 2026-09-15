@@ -3,15 +3,21 @@ const fs = require('fs');
 const path = require('path');
 const { Client, GatewayIntentBits, Collection, Partials } = require('discord.js');
 
+const intents = [
+  GatewayIntentBits.Guilds,
+  GatewayIntentBits.GuildMembers,
+  GatewayIntentBits.GuildMessages,
+  GatewayIntentBits.MessageContent,
+  GatewayIntentBits.GuildVoiceStates,
+  GatewayIntentBits.GuildModeration,
+];
+
+if (process.env.ENABLE_PRESENCE_INTENT === 'true') {
+  intents.push(GatewayIntentBits.GuildPresences);
+}
+
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.GuildModeration, // ban/unban hadisələri üçün
-  ],
+  intents,
   partials: [Partials.Channel, Partials.Message],
 });
 

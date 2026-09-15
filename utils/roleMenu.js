@@ -54,7 +54,7 @@ function getRoleMenuPayload() {
   return {
     embeds: [new EmbedBuilder()
       .setColor(config.COLORS.INFO)
-      .setTitle('Universitet rolunu seç')
+      .setTitle('Rolunu seç')
       .setDescription('Aşağıdakı menyulardan universitetini və cinsiyyətini seç. Hər kateqoriyadan yalnız bir rol saxlaya bilərsən.')
       .setFooter({ text: config.FOOTER_TEXT })],
     components: [
