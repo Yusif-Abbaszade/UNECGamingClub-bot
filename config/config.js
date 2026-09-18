@@ -22,7 +22,7 @@ module.exports = {
   TWEET_CHANNEL_ID: '1549415625107963957',
 
   // Aktivlik statistikalarının toplanacağı ümumi söhbət kanalı
-  GENERAL_CHAT_CHANNEL_ID: process.env.GENERAL_CHAT_CHANNEL_ID || '',
+  GENERAL_CHAT_CHANNEL_ID: process.env.GENERAL_CHAT_CHANNEL_ID || '1515810214962663445',
   GENERAL_CHAT_CHANNEL_NAME: 'umumi-sohbet',
 
   // Bir istifadəçinin bu müddət ərzində göndərdiyi mesajlar spam sayılır
