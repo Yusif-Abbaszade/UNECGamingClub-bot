@@ -4,7 +4,7 @@ module.exports = {
   name: 'guildMemberAdd',
   once: false,
   async execute(member) {
-    const welcomeChannel = member.guild.channels.cache.get(config.GENERAL_CHAT_CHANNEL_ID);
+    const welcomeChannel = member.guild.channels.cache.get(config.WELCOME_CHANNEL_ID);
     if (!welcomeChannel || typeof welcomeChannel.send !== 'function') return;
 
     await welcomeChannel.send(

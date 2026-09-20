@@ -25,6 +25,9 @@ module.exports = {
   GENERAL_CHAT_CHANNEL_ID: process.env.GENERAL_CHAT_CHANNEL_ID || '1515810214962663445',
   GENERAL_CHAT_CHANNEL_NAME: 'umumi-sohbet',
 
+  // Yeni üzvlərə qarşılama mesajlarının göndəriləcəyi kanal
+  WELCOME_CHANNEL_ID: '1515803629783748800',
+
   // Bir istifadəçinin bu müddət ərzində göndərdiyi mesajlar spam sayılır
   SPAM_WINDOW_MS: 5000,
   SPAM_MESSAGE_LIMIT: 4,
