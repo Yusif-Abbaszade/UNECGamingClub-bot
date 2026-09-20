@@ -26,7 +26,7 @@ module.exports = {
   GENERAL_CHAT_CHANNEL_NAME: 'umumi-sohbet',
 
   // Yeni üzvlərə qarşılama mesajlarının göndəriləcəyi kanal
-  WELCOME_CHANNEL_ID: '1515803629783748800',
+  WELCOME_CHANNEL_ID: '1551171380224069632',
 
   // Bir istifadəçinin bu müddət ərzində göndərdiyi mesajlar spam sayılır
   SPAM_WINDOW_MS: 5000,
