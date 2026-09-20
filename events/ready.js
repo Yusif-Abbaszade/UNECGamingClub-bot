@@ -1,7 +1,6 @@
 const { ActivityType } = require('discord.js');
 const { joinVoiceChannel } = require('@discordjs/voice');
 const config = require('../config/config');
-const { ensureRoleMenuMessage } = require('../utils/roleMenu');
 const { ensureTweetPanelMessage } = require('../utils/tweetBot');
 
 async function joinAutoVoiceChannel(client) {
@@ -41,14 +40,6 @@ module.exports = {
     });
 
     await joinAutoVoiceChannel(client);
-
-    if (config.ROLE_CHANNEL_ID) {
-      try {
-        await ensureRoleMenuMessage(client);
-      } catch (err) {
-        console.error('❌ Rol-al menyusunu hazırlamaq mümkün olmadı:', err.message);
-      }
-    }
 
     if (config.TWEET_CHANNEL_ID) {
       try {

@@ -78,7 +78,7 @@ function getRoleMenuPayload() {
   };
 }
 
-async function ensureRoleMenuMessage(client) {
+async function sendRoleMenuMessage(client) {
   if (!config.ROLE_CHANNEL_ID) return;
 
   const channel = await client.channels.fetch(config.ROLE_CHANNEL_ID);
@@ -99,18 +99,9 @@ async function ensureRoleMenuMessage(client) {
     }
   }
 
-  const messages = await channel.messages.fetch({ limit: 50 });
-  const existingMessage = messages.find((message) => message.author.id === client.user.id
-    && message.embeds.some((embed) => embed.title === 'Universitet rolunu seç'));
-  const payload = getRoleMenuPayload();
+  await channel.send(getRoleMenuPayload());
 
-  if (existingMessage) {
-    await existingMessage.edit(payload);
-  } else {
-    await channel.send(payload);
-  }
-
-  console.log(`🎓 Rol-al menyusu hazırdır: #${channel.name}`);
+  console.log(`🎓 Rol-al menyusu göndərildi: #${channel.name}`);
 }
 
 module.exports = {
@@ -121,7 +112,7 @@ module.exports = {
   getGender,
   getGenderRoleName,
   getRoleMenuPayload,
-  ensureRoleMenuMessage,
+  sendRoleMenuMessage,
   universities,
   genders,
 };
