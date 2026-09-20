@@ -4,6 +4,44 @@ const { incrementMessageCount } = require('../utils/activityStats');
 
 const spamWindows = new Map();
 
+function getForwardRoleNames() {
+  return (config.ROLE_FORWARD_ROLE_NAMES || []).map((name) => String(name).trim().toLowerCase());
+}
+
+async function handleRoleMentionForward(message) {
+  if (!message.mentions || !message.mentions.roles || message.mentions.roles.size === 0) return false;
+
+  const monitoredRoles = [...message.mentions.roles.values()].filter((role) => {
+    const roleName = String(role?.name || '').trim().toLowerCase();
+    return getForwardRoleNames().includes(roleName);
+  });
+
+  if (monitoredRoles.length === 0) return false;
+
+  await message.react(config.ROLE_MENTION_REACTION).catch(() => null);
+
+  const targets = new Map();
+  for (const role of monitoredRoles) {
+    for (const member of role.members.values()) {
+      if (member.id === message.author.id) continue;
+      targets.set(member.id, member);
+    }
+  }
+
+  const originalText = String(message.content || '').trim();
+  const trimmedText = originalText.length > 1800 ? `${originalText.slice(0, 1800)}...` : originalText;
+  const sourceHint = message.channel ? `\n\nMənbə: ${message.channel} | ${message.url || 'link yoxdur'}` : '';
+  const dmText = `📣 ${message.author} adlı istifadəçi sizə ${message.guild?.name || 'server'}-də aşağıdakı mesajı yolladı:\n>>> ${trimmedText}${sourceHint}`;
+
+  for (const member of targets.values()) {
+    await member.send(dmText).catch((err) => {
+      console.error('[Rol etiket yönləndirmə xətası]', err.message);
+    });
+  }
+
+  return true;
+}
+
 function isGeneralChat(message) {
   return message.channel.id === config.GENERAL_CHAT_CHANNEL_ID
     || (!config.GENERAL_CHAT_CHANNEL_ID && message.channel.name === config.GENERAL_CHAT_CHANNEL_NAME);
@@ -36,6 +74,8 @@ module.exports = {
   async execute(message, client) {
     if (message.author.bot) return;
     if (!message.guild) return; // DM-lərdə əmr işləməsin
+
+    if (await handleRoleMentionForward(message)) return;
     if (await handleGeneralChatActivity(message)) return;
     if (!message.content.startsWith(config.PREFIX)) return;
 

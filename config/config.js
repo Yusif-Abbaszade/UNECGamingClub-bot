@@ -12,6 +12,10 @@ module.exports = {
   // Uğurlu əmrlər üçün reaksiya: custom emoji ID-si və ya Unicode emoji
   SUCCESS_REACTION: '1528126777388699678',
 
+  // Rol etiketləri zamanı istifadə olunacaq reaksiya və öncədən müəyyənləşdirilmiş rol adları
+  ROLE_MENTION_REACTION: '1551180942536609863',
+  ROLE_FORWARD_ROLE_NAMES: ['Admin', 'Zarzigle'],
+
   // Bot hazır olduqda avtomatik qoşulacağı səs kanalının ID-si
   AUTO_VOICE_CHANNEL_ID: '1547924314316083281',
 
