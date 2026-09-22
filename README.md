@@ -64,6 +64,17 @@ ROLE_CHANNEL_ID: '1234567890123456789',
 universitet rolları yoxdursa özü yaradacaq. Botda **Manage Roles** icazəsi olmalı və bot rolu
 yaradılan universitet rollarından yuxarıda yerləşməlidir.
 
+### Ümumi üzv statistikası
+
+Bot `1515810214962663445` ID-li ümumi söhbət kanalının topic hissəsini bu formatda canlı
+yeniləyir; kanal adı isə `💬ümumi-söhbət` olaraq qalır:
+`**ÜMUMİ ÜZV: 150 | AKTİV ÜZV: 59**`
+
+Aktiv üzv statusu `offline` olmayan üzvlər əsasında hesablanır. Bunun işləməsi üçün Discord
+Developer Portal → **Bot** → **Privileged Gateway Intents** bölməsində **Server Members Intent**
+və **Presence Intent** aktiv edilməli, botda isə həmin kanalı idarə etmək üçün **Manage Channels**
+icazəsi olmalıdır. Topic hissəsi Discord kanal başlığında kanal adının yanında görünür.
+
 ### 4. Botu işə sal
 ```bash
 npm start

@@ -1,9 +1,11 @@
 const config = require('../config/config');
+const { scheduleGeneralChatChannelUpdate } = require('../utils/channelStats');
 
 module.exports = {
   name: 'guildMemberAdd',
   once: false,
   async execute(member) {
+    scheduleGeneralChatChannelUpdate(member.guild);
     const welcomeChannel = member.guild.channels.cache.get(config.WELCOME_CHANNEL_ID);
     if (!welcomeChannel || typeof welcomeChannel.send !== 'function') return;
 

@@ -28,6 +28,11 @@ module.exports = {
   // Aktivlik statistikalarının toplanacağı ümumi söhbət kanalı
   GENERAL_CHAT_CHANNEL_ID: process.env.GENERAL_CHAT_CHANNEL_ID || '1515810214962663445',
   GENERAL_CHAT_CHANNEL_NAME: 'umumi-sohbet',
+  GENERAL_CHAT_CHANNEL_PREFIX: process.env.GENERAL_CHAT_CHANNEL_PREFIX || '💬ümumi-söhbət',
+  MEMBER_STATS_CHANNEL_IDS: [
+    process.env.GENERAL_CHAT_CHANNEL_ID || '1515810214962663445',
+    '1542535649607942174',
+  ],
 
   // Yeni üzvlərə qarşılama mesajlarının göndəriləcəyi kanal
   WELCOME_CHANNEL_ID: '1551171380224069632',

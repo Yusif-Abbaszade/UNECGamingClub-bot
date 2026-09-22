@@ -2,6 +2,7 @@ const { ActivityType } = require('discord.js');
 const { joinVoiceChannel } = require('@discordjs/voice');
 const config = require('../config/config');
 const { ensureTweetPanelMessage } = require('../utils/tweetBot');
+const { updateGeneralChatChannel } = require('../utils/channelStats');
 
 async function joinAutoVoiceChannel(client) {
   try {
@@ -40,6 +41,19 @@ module.exports = {
     });
 
     await joinAutoVoiceChannel(client);
+
+    for (const guild of client.guilds.cache.values()) {
+      console.log(`[Kanal statistikası] Yenilənmə başlayır: ${guild.name}`);
+      await updateGeneralChatChannel(guild);
+    }
+
+    setInterval(() => {
+      for (const guild of client.guilds.cache.values()) {
+        updateGeneralChatChannel(guild).catch((err) => {
+          console.error('[Periodik kanal statistikası xətası]', err.message);
+        });
+      }
+    }, 60 * 1000);
 
     if (config.TWEET_CHANNEL_ID) {
       try {

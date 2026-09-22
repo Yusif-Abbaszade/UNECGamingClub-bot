@@ -10,11 +10,8 @@ const intents = [
   GatewayIntentBits.MessageContent,
   GatewayIntentBits.GuildVoiceStates,
   GatewayIntentBits.GuildModeration,
+  GatewayIntentBits.GuildPresences,
 ];
-
-if (process.env.ENABLE_PRESENCE_INTENT === 'true') {
-  intents.push(GatewayIntentBits.GuildPresences);
-}
 
 const client = new Client({
   intents,
