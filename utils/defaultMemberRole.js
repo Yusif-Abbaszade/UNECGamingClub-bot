@@ -1,6 +1,18 @@
-const config = require('../config/config');
+﻿const config = require('../config/config');
+
+function hasBotExcludedRole(member) {
+  if (member.user.bot) return true;
+
+  return member.roles.cache.some((role) => {
+    if (config.BOT_ROLE_ID && role.id === config.BOT_ROLE_ID) return true;
+    if (!config.BOT_ROLE_NAME) return false;
+    return role.name && role.name.toLowerCase() === String(config.BOT_ROLE_NAME).toLowerCase();
+  });
+}
 
 async function addDefaultMemberRole(member) {
+  if (hasBotExcludedRole(member)) return true;
+
   const role = member.guild.roles.cache.find((item) => item.name === config.DEFAULT_MEMBER_ROLE_NAME);
 
   if (!role) {
