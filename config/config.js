@@ -21,6 +21,7 @@ module.exports = {
 
   // Universitet rollarının veriləcəyi kanalın ID-si
   ROLE_CHANNEL_ID: '1548827326505156718',
+  DEFAULT_MEMBER_ROLE_NAME: '⚜️Vətəndaş',
 
   // Tweet-lərin paylaşılacağı kanalın ID-si
   TWEET_CHANNEL_ID: '1549415625107963957',

@@ -3,6 +3,7 @@ const { joinVoiceChannel } = require('@discordjs/voice');
 const config = require('../config/config');
 const { ensureTweetPanelMessage } = require('../utils/tweetBot');
 const { updateGeneralChatChannel } = require('../utils/channelStats');
+const { addDefaultRoleToGuildMembers } = require('../utils/defaultMemberRole');
 
 async function joinAutoVoiceChannel(client) {
   try {
@@ -45,6 +46,9 @@ module.exports = {
     for (const guild of client.guilds.cache.values()) {
       console.log(`[Kanal statistikası] Yenilənmə başlayır: ${guild.name}`);
       await updateGeneralChatChannel(guild);
+
+      console.log(`[Standart rol] Üzvlərə ${config.DEFAULT_MEMBER_ROLE_NAME} rolu verilir: ${guild.name}`);
+      await addDefaultRoleToGuildMembers(guild);
     }
 
     setInterval(() => {
