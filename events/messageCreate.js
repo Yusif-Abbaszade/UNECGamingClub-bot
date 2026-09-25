@@ -29,7 +29,10 @@ async function purgeCountingChannel(guildOrGuildId) {
   if (!channel || typeof channel.messages?.fetch !== 'function') return false;
 
   const botMember = guild.members.me || await guild.members.fetchMe().catch(() => null);
-  if (!botMember || !botMember.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+  if (!botMember) return false;
+
+  const channelPermissions = channel.permissionsFor(botMember);
+  if (!channelPermissions || !channelPermissions.has(PermissionsBitField.Flags.ManageMessages)) {
     return false;
   }
 

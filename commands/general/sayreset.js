@@ -21,8 +21,12 @@ module.exports = {
     }
 
     const botMember = message.guild.members.me || await message.guild.members.fetchMe().catch(() => null);
-    if (!botMember || !botMember.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
-      await message.reply('❌ Botun bu kanalda **Manage Messages** icazəsi yoxdur. Bot rolu üzərində bu icazəni açın.');
+    const channel = message.guild.channels.cache.get('1552833359502254090')
+      || await message.guild.channels.fetch('1552833359502254090').catch(() => null);
+    const channelPermissions = channel && botMember ? channel.permissionsFor(botMember) : null;
+
+    if (!botMember || !channelPermissions || !channelPermissions.has(PermissionsBitField.Flags.ManageMessages)) {
+      await message.reply('❌ Botun bu kanalda **Manage Messages** icazəsi yoxdur. Bot rolunu və kanal permission override-larını yoxlayın.');
       return;
     }
 
@@ -41,8 +45,12 @@ module.exports = {
     }
 
     const botMember = interaction.guild.members.me || await interaction.guild.members.fetchMe().catch(() => null);
-    if (!botMember || !botMember.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
-      await interaction.reply({ content: '❌ Botun bu kanalda **Manage Messages** icazəsi yoxdur. Bot rolu üzərində bu icazəni açın.', ephemeral: true });
+    const channel = interaction.guild.channels.cache.get('1552833359502254090')
+      || await interaction.guild.channels.fetch('1552833359502254090').catch(() => null);
+    const channelPermissions = channel && botMember ? channel.permissionsFor(botMember) : null;
+
+    if (!botMember || !channelPermissions || !channelPermissions.has(PermissionsBitField.Flags.ManageMessages)) {
+      await interaction.reply({ content: '❌ Botun bu kanalda **Manage Messages** icazəsi yoxdur. Bot rolunu və kanal permission override-larını yoxlayın.', ephemeral: true });
       return;
     }
 
