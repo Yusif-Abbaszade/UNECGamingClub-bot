@@ -15,20 +15,26 @@ function resetCountingState(guildId) {
   countingState.set(getCountingStateKey(guildId), { nextNumber: 1, lastUserId: null });
 }
 
-async function purgeCountingChannel(guildId) {
-  const guild = global.client?.guilds.cache.get(guildId);
-  if (!guild) return;
+async function purgeCountingChannel(guildOrGuildId) {
+  const guild = typeof guildOrGuildId === 'string'
+    ? (global.client?.guilds.cache.get(guildOrGuildId) || null)
+    : guildOrGuildId;
 
-  const channel = guild.channels.cache.get(COUNTING_CHANNEL_ID);
-  if (!channel || typeof channel.bulkDelete !== 'function') return;
+  if (!guild) return false;
 
-  const messages = await channel.messages.fetch({ limit: 100 }).catch(() => new Map());
-  if (messages.size === 0) return;
+  const channel = guild.channels.cache.get(COUNTING_CHANNEL_ID)
+    || await guild.channels.fetch(COUNTING_CHANNEL_ID).catch(() => null);
+
+  if (!channel || typeof channel.bulkDelete !== 'function') return false;
+
+  const messages = await channel.messages.fetch({ limit: 100 }).catch(() => null);
+  if (!messages || messages.size === 0) return true;
 
   const ids = [...messages.keys()];
-  if (ids.length === 0) return;
+  if (ids.length === 0) return true;
 
   await channel.bulkDelete(ids, true).catch(() => null);
+  return true;
 }
 
 async function handleCountingChannel(message) {
@@ -127,6 +133,7 @@ module.exports = {
   name: 'messageCreate',
   once: false,
   resetCountingState,
+  purgeCountingChannel,
   async execute(message, client) {
     if (message.author.bot) return;
     if (!message.guild) return; // DM-lərdə əmr işləməsin
