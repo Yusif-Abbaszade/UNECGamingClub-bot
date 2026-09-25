@@ -3,6 +3,47 @@ const { errorEmbed } = require('../utils/embeds');
 const { incrementMessageCount } = require('../utils/activityStats');
 
 const spamWindows = new Map();
+const countingState = new Map();
+const COUNTING_CHANNEL_ID = '1552833359502254090';
+const COUNTING_CONFIRM_REACTION_ID = '1552834541062852678';
+
+function getCountingStateKey(guildId) {
+  return `${guildId}:${COUNTING_CHANNEL_ID}`;
+}
+
+async function handleCountingChannel(message) {
+  if (message.channel.id !== COUNTING_CHANNEL_ID) return false;
+
+  const content = String(message.content || '').trim();
+  const numericValue = Number(content);
+  const isNumericMessage = /^\d+$/.test(content);
+
+  if (!isNumericMessage) {
+    await message.delete().catch(() => null);
+    return true;
+  }
+
+  const stateKey = getCountingStateKey(message.guild.id);
+  const currentState = countingState.get(stateKey) || { nextNumber: 1, lastUserId: null };
+  const expectedValue = currentState.nextNumber;
+
+  if (numericValue !== expectedValue || message.author.id === currentState.lastUserId) {
+    await message.delete().catch(() => null);
+    return true;
+  }
+
+  currentState.nextNumber = expectedValue + 1;
+  currentState.lastUserId = message.author.id;
+  countingState.set(stateKey, currentState);
+
+  try {
+    await message.react(COUNTING_CONFIRM_REACTION_ID);
+  } catch (err) {
+    console.error('[Sayma kanal reaksiya xətası]', err.message);
+  }
+
+  return true;
+}
 
 function getForwardRoleNames() {
   return (config.ROLE_FORWARD_ROLE_NAMES || []).map((name) => String(name).trim().toLowerCase());
@@ -75,6 +116,7 @@ module.exports = {
     if (message.author.bot) return;
     if (!message.guild) return; // DM-lərdə əmr işləməsin
 
+    if (await handleCountingChannel(message)) return;
     if (await handleRoleMentionForward(message)) return;
     if (await handleGeneralChatActivity(message)) return;
     if (!message.content.startsWith(config.PREFIX)) return;
