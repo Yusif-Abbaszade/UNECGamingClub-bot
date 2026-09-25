@@ -11,28 +11,26 @@ function getCountingStateKey(guildId) {
   return `${guildId}:${COUNTING_CHANNEL_ID}`;
 }
 
+function resetCountingState(guildId) {
+  countingState.set(getCountingStateKey(guildId), { nextNumber: 1, lastUserId: null });
+}
+
 async function handleCountingChannel(message) {
   if (message.channel.id !== COUNTING_CHANNEL_ID) return false;
 
   const content = String(message.content || '').trim();
-  const numericValue = Number(content);
-  const isNumericMessage = /^\d+$/.test(content);
-
-  if (!isNumericMessage) {
-    await message.delete().catch(() => null);
-    return true;
-  }
-
   const stateKey = getCountingStateKey(message.guild.id);
   const currentState = countingState.get(stateKey) || { nextNumber: 1, lastUserId: null };
-  const expectedValue = currentState.nextNumber;
+  const expectedValue = String(currentState.nextNumber);
 
-  if (numericValue !== expectedValue || message.author.id === currentState.lastUserId) {
+  const isExactExpectedNumber = /^\d+$/.test(content) && content === expectedValue && message.author.id !== currentState.lastUserId;
+
+  if (!isExactExpectedNumber) {
     await message.delete().catch(() => null);
     return true;
   }
 
-  currentState.nextNumber = expectedValue + 1;
+  currentState.nextNumber = Number(expectedValue) + 1;
   currentState.lastUserId = message.author.id;
   countingState.set(stateKey, currentState);
 
@@ -112,6 +110,7 @@ async function handleGeneralChatActivity(message) {
 module.exports = {
   name: 'messageCreate',
   once: false,
+  resetCountingState,
   async execute(message, client) {
     if (message.author.bot) return;
     if (!message.guild) return; // DM-lərdə əmr işləməsin
