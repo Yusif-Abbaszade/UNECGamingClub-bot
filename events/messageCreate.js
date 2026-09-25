@@ -4,76 +4,6 @@ const { errorEmbed } = require('../utils/embeds');
 const { incrementMessageCount } = require('../utils/activityStats');
 
 const spamWindows = new Map();
-const countingState = new Map();
-const COUNTING_CHANNEL_ID = '1552833359502254090';
-const COUNTING_CONFIRM_REACTION_ID = '1552834541062852678';
-
-function getCountingStateKey(guildId) {
-  return `${guildId}:${COUNTING_CHANNEL_ID}`;
-}
-
-function resetCountingState(guildId) {
-  countingState.set(getCountingStateKey(guildId), { nextNumber: 1, lastUserId: null });
-}
-
-async function purgeCountingChannel(guildOrGuildId) {
-  const guild = typeof guildOrGuildId === 'string'
-    ? (global.client?.guilds.cache.get(guildOrGuildId) || null)
-    : guildOrGuildId;
-
-  if (!guild) return false;
-
-  const channel = guild.channels.cache.get(COUNTING_CHANNEL_ID)
-    || await guild.channels.fetch(COUNTING_CHANNEL_ID).catch(() => null);
-
-  if (!channel || typeof channel.messages?.fetch !== 'function') return false;
-
-  const botMember = guild.members.me || await guild.members.fetchMe().catch(() => null);
-  if (!botMember) return false;
-
-  const channelPermissions = channel.permissionsFor(botMember);
-  if (!channelPermissions || !channelPermissions.has(PermissionsBitField.Flags.ManageMessages)) {
-    return false;
-  }
-
-  const messages = await channel.messages.fetch({ limit: 100 }).catch(() => null);
-  if (!messages || messages.size === 0) return true;
-
-  const messageList = [...messages.values()];
-  for (const msg of messageList) {
-    await msg.delete().catch(() => null);
-  }
-
-  return true;
-}
-
-async function handleCountingChannel(message) {
-  if (message.channel.id !== COUNTING_CHANNEL_ID) return false;
-
-  const content = String(message.content || '').trim();
-  const stateKey = getCountingStateKey(message.guild.id);
-  const currentState = countingState.get(stateKey) || { nextNumber: 1, lastUserId: null };
-  const expectedValue = String(currentState.nextNumber);
-
-  const isExactExpectedNumber = /^\d+$/.test(content) && content === expectedValue && message.author.id !== currentState.lastUserId;
-
-  if (!isExactExpectedNumber) {
-    await message.delete().catch(() => null);
-    return true;
-  }
-
-  currentState.nextNumber = Number(expectedValue) + 1;
-  currentState.lastUserId = message.author.id;
-  countingState.set(stateKey, currentState);
-
-  try {
-    await message.react(COUNTING_CONFIRM_REACTION_ID);
-  } catch (err) {
-    console.error('[Sayma kanal reaksiya xətası]', err.message);
-  }
-
-  return true;
-}
 
 function getForwardRoleNames() {
   return (config.ROLE_FORWARD_ROLE_NAMES || []).map((name) => String(name).trim().toLowerCase());
@@ -142,13 +72,10 @@ async function handleGeneralChatActivity(message) {
 module.exports = {
   name: 'messageCreate',
   once: false,
-  resetCountingState,
-  purgeCountingChannel,
   async execute(message, client) {
     if (message.author.bot) return;
     if (!message.guild) return; // DM-lərdə əmr işləməsin
 
-    if (await handleCountingChannel(message)) return;
     if (await handleRoleMentionForward(message)) return;
     if (await handleGeneralChatActivity(message)) return;
     if (!message.content.startsWith(config.PREFIX)) return;
