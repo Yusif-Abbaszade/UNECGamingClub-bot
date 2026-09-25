@@ -15,6 +15,22 @@ function resetCountingState(guildId) {
   countingState.set(getCountingStateKey(guildId), { nextNumber: 1, lastUserId: null });
 }
 
+async function purgeCountingChannel(guildId) {
+  const guild = global.client?.guilds.cache.get(guildId);
+  if (!guild) return;
+
+  const channel = guild.channels.cache.get(COUNTING_CHANNEL_ID);
+  if (!channel || typeof channel.bulkDelete !== 'function') return;
+
+  const messages = await channel.messages.fetch({ limit: 100 }).catch(() => new Map());
+  if (messages.size === 0) return;
+
+  const ids = [...messages.keys()];
+  if (ids.length === 0) return;
+
+  await channel.bulkDelete(ids, true).catch(() => null);
+}
+
 async function handleCountingChannel(message) {
   if (message.channel.id !== COUNTING_CHANNEL_ID) return false;
 

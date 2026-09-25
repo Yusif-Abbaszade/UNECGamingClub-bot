@@ -1,5 +1,5 @@
 const { PermissionsBitField, SlashCommandBuilder } = require('discord.js');
-const { resetCountingState } = require('../../events/messageCreate');
+const { resetCountingState, purgeCountingChannel } = require('../../events/messageCreate');
 
 function isAdministrator(member) {
   return member?.permissions.has(PermissionsBitField.Flags.Administrator);
@@ -21,7 +21,8 @@ module.exports = {
     }
 
     resetCountingState(message.guild.id);
-    await message.reply('✅ Sayma sıfırlandı. Növbəti mesaj 1 olmalıdır.');
+    await purgeCountingChannel(message.guild.id);
+    await message.reply('✅ Sayma sıfırlandı və kanalın mesajları silindi. Növbəti mesaj 1 olmalıdır.');
   },
   async executeSlash(interaction) {
     if (!interaction.memberPermissions?.has(PermissionsBitField.Flags.Administrator)) {
@@ -30,6 +31,7 @@ module.exports = {
     }
 
     resetCountingState(interaction.guild.id);
-    await interaction.reply({ content: '✅ Sayma sıfırlandı. Növbəti mesaj 1 olmalıdır.', ephemeral: true });
+    await purgeCountingChannel(interaction.guild.id);
+    await interaction.reply({ content: '✅ Sayma sıfırlandı və kanalın mesajları silindi. Növbəti mesaj 1 olmalıdır.', ephemeral: true });
   },
 };
