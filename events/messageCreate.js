@@ -1,3 +1,4 @@
+const { PermissionsBitField } = require('discord.js');
 const config = require('../config/config');
 const { errorEmbed } = require('../utils/embeds');
 const { incrementMessageCount } = require('../utils/activityStats');
@@ -25,15 +26,21 @@ async function purgeCountingChannel(guildOrGuildId) {
   const channel = guild.channels.cache.get(COUNTING_CHANNEL_ID)
     || await guild.channels.fetch(COUNTING_CHANNEL_ID).catch(() => null);
 
-  if (!channel || typeof channel.bulkDelete !== 'function') return false;
+  if (!channel || typeof channel.messages?.fetch !== 'function') return false;
+
+  const botMember = guild.members.me || await guild.members.fetchMe().catch(() => null);
+  if (!botMember || !botMember.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+    return false;
+  }
 
   const messages = await channel.messages.fetch({ limit: 100 }).catch(() => null);
   if (!messages || messages.size === 0) return true;
 
-  const ids = [...messages.keys()];
-  if (ids.length === 0) return true;
+  const messageList = [...messages.values()];
+  for (const msg of messageList) {
+    await msg.delete().catch(() => null);
+  }
 
-  await channel.bulkDelete(ids, true).catch(() => null);
   return true;
 }
 
